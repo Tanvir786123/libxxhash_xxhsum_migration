@@ -1,0 +1,35 @@
+module(name = "libxxhash_xxhsum_migration")
+
+bazel_dep(name = "gcc_toolchain")
+bazel_dep(name = "rules_cc", version = "0.2.17")
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "rules_shell", version = "0.5.1")
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+
+git_override(
+    module_name = "gcc_toolchain",
+    commit = "afb8939c503cebc6c6a44d34d091365ebfc8edc3",
+    remote = "https://github.com/ljessendk/gcc-toolchain.git",
+)
+
+gcc_toolchains = use_extension(
+    "@gcc_toolchain//toolchain:module_extensions.bzl",
+    "gcc_toolchains",
+    dev_dependency = True,
+)
+
+gcc_toolchains.toolchain(
+    name = "gcc_toolchain_x86_64",
+    target_arch = "x86_64",
+    gcc_version = "15.2.0",
+)
+
+use_repo(
+    gcc_toolchains,
+    "gcc_toolchain_x86_64",
+)
+
+register_toolchains(
+    "@gcc_toolchain_x86_64//:cc_toolchain",
+    dev_dependency = True,
+)
